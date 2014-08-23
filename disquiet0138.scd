@@ -1,11 +1,12 @@
 s.boot;
+//We wan't to know what is going on
 s.meter;
 s.plotTree;
-s.scope;
+// Moare Power!!!
 s.options.maxNodes = 1024*4;
 s.options.memSize = 8192*4;
 
-
+// The synthDef
 (
 SynthDef.new(\simpleOsc,{
 	arg out=0, freq=440, vol=0.001, pan=0, fmAmount=0, t_trig=1;
@@ -16,21 +17,11 @@ SynthDef.new(\simpleOsc,{
 }).add;
 )
 
+//testing of synthDef - no need to evaluate
 a = Synth.new(\simpleOsc,[\vol,0.5]);
 a.set(\t_trig,1);
 
-
-SynthDef.new(\percOsc,{
-	arg out=0, freq=440, vol=1/1280,pan=0;
-	var sig, env;
-	sig = SinOsc.ar(freq);
-	env = EnvGen.kr(Env.perc(0.01,0.1),doneAction:2);
-	Out.ar(out,Pan2.ar(sig*vol*env,pan));
-}).add;
-
-
-
-( //testing of synthDef
+(
 var num;
 num = 1000;
 num.do({|i|
@@ -38,6 +29,7 @@ num.do({|i|
 });
 )
 
+// Due to processing not sending on the correct port; listen to all ports:
 ~netAddr = NetAddr("127.0.0.1", nil); //local
 (
 ~synthArray = Array.newClear(1280);
@@ -49,7 +41,7 @@ OSCdef(\fromP5,{
 		//create one if it does not
 		~synthArray[msg[1]] = Synth.new(\simpleOsc,[\freq, (msg[3]/msg[2]).linexp(0,0.8,50,10000), \pan, msg[1].linlin(330,1000,-1,1,\minmmax), \fmAmount, 0]);
 	},{
-		//change fm amount if it does
+		//pass new params and retrigger if it does
 		var frequencie = (msg[3]/msg[2]).linexp(0,0.8,50,12000);
 		frequencie.postln;
 		~synthArray[msg[1]].set(\t_trig, 1, \freq, frequencie, \fmAmount, 0);
@@ -57,6 +49,7 @@ OSCdef(\fromP5,{
 },"/test",~netAddr);
 )
 
+// check how many synths were instansiated.
 (
 x=0;
 ~synthArray.do({|i|
