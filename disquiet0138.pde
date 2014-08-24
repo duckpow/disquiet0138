@@ -23,7 +23,7 @@ void setup() {
   oscP5 = new OscP5(this,57120);
   superCollider = new NetAddress("127.0.0.1", 57120);
   
-  myMovie = new Movie(this, "/Users/anderslaessoe/disquiet0138/untitled.mp4");
+  myMovie = new Movie(this, "/Path/to/movie");
   //myMovie.frameRate(1);
   myMovie.play();
 }
