@@ -25,7 +25,7 @@ void setup() {
   
   myMovie = new Movie(this, "/Users/anderslaessoe/disquiet0138/untitled.mp4");
   //myMovie.frameRate(1);
-  myMovie.loop();
+  myMovie.play();
 }
 
 void draw() {

@@ -3,13 +3,15 @@ s.boot;
 s.meter;
 s.plotTree;
 // Moare Power!!!
+(
 s.options.maxNodes = 1024*4;
 s.options.memSize = 8192*4;
+)
 
 // The synthDef
 (
 SynthDef.new(\simpleOsc,{
-	arg out=0, freq=440, vol=0.001, pan=0, fmAmount=0, t_trig=1;
+	arg out=0, freq=440, vol=0.002, pan=0, fmAmount=0, t_trig=1;
 	var sig, env;
 	env = EnvGen.kr(Env.perc(0.01,1),t_trig,doneAction: 0);
 	sig = SinOsc.ar(freq + SinOsc.kr(Rand(5,100),mul: fmAmount));
@@ -36,15 +38,19 @@ num.do({|i|
 
 OSCdef(\fromP5,{
 	arg msg, time, addr, recvPort;
+	var lowerFreq = 25;
+	var higherFreq = 15000;
+	var fM = msg[2];
+
 	if(~synthArray[msg[1]].isNil, // || ~synthArray[msg[1]].isPlaying.not, //check if a synth exists
 	{
 		//create one if it does not
-		~synthArray[msg[1]] = Synth.new(\simpleOsc,[\freq, (msg[3]/msg[2]).linexp(0,0.8,50,10000), \pan, msg[1].linlin(330,1000,-1,1,\minmmax), \fmAmount, 0]);
+		~synthArray[msg[1]] = Synth.new(\simpleOsc,[\freq, (msg[3]/msg[2]).linexp(0,0.8,lowerFreq,higherFreq), \pan, msg[1].linlin(390,1280,-1,1,\minmmax), \fmAmount, fM]);
 	},{
 		//pass new params and retrigger if it does
-		var frequencie = (msg[3]/msg[2]).linexp(0,0.8,50,12000);
+		var frequencie = (msg[3]/msg[2]).linexp(0,0.8,lowerFreq,higherFreq);
 		frequencie.postln;
-		~synthArray[msg[1]].set(\t_trig, 1, \freq, frequencie, \fmAmount, 0);
+			~synthArray[msg[1]].set(\t_trig, 1, \freq, frequencie, \fmAmount, fM);
 	});
 },"/test",~netAddr);
 )
@@ -57,3 +63,8 @@ x=0;
 });
 ~synthArray.size-x;
 )
+
+//Recording
+s.record;
+
+s.recordNode.stop;
