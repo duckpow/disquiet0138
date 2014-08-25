@@ -24,7 +24,7 @@ void setup() {
   superCollider = new NetAddress("127.0.0.1", 57120);
   
   myMovie = new Movie(this, "/Path/to/movie");
-  //myMovie.frameRate(1);
+  //change the following line to myMovie.loop(); for endless playback. No change in SuperCollider needed.
   myMovie.play();
 }
 
